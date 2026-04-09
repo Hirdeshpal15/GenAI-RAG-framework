@@ -1,0 +1,10 @@
+numpy<2.0
+torch==2.1.2
+sentence-transformers==2.2.2
+chromadb
+groq
+pypdf
+tqdm
+python-dotenv
+streamlit
+langchain
