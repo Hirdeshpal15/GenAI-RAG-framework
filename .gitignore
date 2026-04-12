@@ -2,5 +2,6 @@ venv/
 __pycache__/
 .env
 vectorstore/
+database/
 *.sqlite3
 *.pyc
