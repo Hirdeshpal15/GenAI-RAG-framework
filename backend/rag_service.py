@@ -32,26 +32,40 @@ def initialize_system():
 
 
 def process_query(query):
-    """
-    Main RAG pipeline function
-    """
 
-    initialize_system()
+    try:
+        print(f"Received query: {query}")
 
-    retrieved_chunks, scores = retrieve_chunks(collection, model, query)
+        initialize_system()
 
-    threshold = 1.2
+        retrieved_chunks, scores = retrieve_chunks(collection, model, query)
 
-    if min(scores) > threshold:
-        answer = "No relevant information found in the document."
-        retrieved_chunks = []
+        print("Retrieved chunks:", retrieved_chunks)
 
-    else:
-        answer = generate_answer(query, retrieved_chunks)
+        threshold = 1.2
 
-    log_interaction(query, answer, retrieved_chunks)
+        if not scores:
+            return {
+                "answer": "No data found.",
+                "evidence": []
+            }
 
-    return {
-        "answer": answer,
-        "evidence": retrieved_chunks
-    }
+        if min(scores) > threshold:
+            answer = "No relevant information found in the document."
+            retrieved_chunks = []
+        else:
+            answer = generate_answer(query, retrieved_chunks)
+
+        log_interaction(query, answer, retrieved_chunks)
+
+        return {
+            "answer": answer,
+            "evidence": retrieved_chunks
+        }
+
+    except Exception as e:
+        print("ERROR:", str(e))
+        return {
+            "answer": "Backend error occurred",
+            "evidence": []
+        }

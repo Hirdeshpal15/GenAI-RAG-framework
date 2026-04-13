@@ -1,21 +1,19 @@
-from groq import Groq
 import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 
 def generate_answer(query, retrieved_chunks):
 
-    client = Groq(
-        api_key=os.getenv("GROQ_API_KEY")
-    )
-
-    context = "\n\n".join(retrieved_chunks)
+    context = "\n".join(retrieved_chunks)
 
     prompt = f"""
-You are answering questions using ONLY the provided context.
-
-If the answer cannot be found in the context, reply exactly:
-
-"NO INFORMATION FOUND IN DOCUMENT."
+Answer the question based ONLY on the context below.
+If the answer is not in the context, say "No relevant information found."
 
 Context:
 {context}
@@ -26,11 +24,24 @@ Question:
 Answer:
 """
 
-    response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.2,
-        max_tokens=300
-    )
+    url = "https://api.groq.com/openai/v1/chat/completions"
 
-    return response.choices[0].message.content
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    data = {
+        "model": "llama-3.3-70b-versatile",
+        "messages": [
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.2,
+        "max_tokens": 300
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+
+    result = response.json()
+
+    return result["choices"][0]["message"]["content"]

@@ -9,23 +9,15 @@ def create_embedding_model():
     model = SentenceTransformer("all-MiniLM-L6-v2")
     return model
 
-
-
-
 def embed_chunks(model, chunks):
 
-    """
-    Converts text chunks into embeddings.
-
-    Args:
-        model: embedding model
-        chunks (list): list of text chunks
-
-    Returns:
-        list: embeddings
-    """
-
     embeddings = model.encode(chunks)
-    return embeddings
 
+    # FORCE conversion (important)
+    clean_embeddings = []
+
+    for e in embeddings:
+        clean_embeddings.append(e.tolist())
+
+    return clean_embeddings
 

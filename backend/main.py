@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from backend.rag_service import process_query
 
 app = FastAPI()
@@ -10,8 +11,8 @@ def root():
 
 
 @app.post("/ask")
-def ask_question(query: str):
+def ask(query: str):
 
-    response = process_query(query)
+    result = process_query(query)
 
-    return response
+    return JSONResponse(content=result)
