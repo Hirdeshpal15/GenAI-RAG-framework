@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+from modules.evaluation import evaluate_relevance, evaluate_faithfulness
 import os
 
 load_dotenv()
@@ -55,6 +56,12 @@ def process_query(query):
             retrieved_chunks = []
         else:
             answer = generate_answer(query, retrieved_chunks)
+        
+        relevance_score = evaluate_relevance(query, retrieved_chunks)
+        faithfulness_score = evaluate_faithfulness(answer, retrieved_chunks)
+
+        print(f"Relevance Score: {relevance_score}")
+        print(f"Faithfulness Score: {faithfulness_score}")
 
         log_interaction(query, answer, retrieved_chunks)
 

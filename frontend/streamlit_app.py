@@ -1,19 +1,15 @@
 import streamlit as st
 import requests
-import os
 
-# Configurable API URL
-API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
+API_URL = "http://127.0.0.1:8000"
 
 st.title("Industrial Document AI Assistant")
 st.write("Ask questions about your maintenance documents.")
 
 query = st.text_input("Enter your question")
 
-# containers for dynamic output
 answer_container = st.empty()
 evidence_container = st.empty()
-
 
 if st.button("Ask"):
 
@@ -22,19 +18,21 @@ if st.button("Ask"):
         params={"query": query}
     )
 
+    if response.status_code != 200:
+        st.error("API Error")
+        st.write(response.text)
+        st.stop()
+
     data = response.json()
 
-    answer = data["answer"]
-    retrieved_chunks = data["evidence"]
+    answer = data.get("answer", "No answer returned")
+    retrieved_chunks = data.get("evidence", [])
 
-    # Show Answer
     with answer_container.container():
         st.subheader("Answer")
         st.write(answer)
 
-    # Show Evidence
     with evidence_container.container():
-
         st.subheader("Evidence")
 
         if retrieved_chunks:
